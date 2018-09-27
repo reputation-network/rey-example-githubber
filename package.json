@@ -1,0 +1,15 @@
+{
+  "name": "rey-example-githubber",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^15.11.2",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "lodash": "^4.17.11",
+    "mongodb": "^3.1.4",
+    "morgan": "^1.9.1",
+    "web3-eth-accounts": "^1.0.0-beta.36"
+  }
+}
