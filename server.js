@@ -48,6 +48,7 @@ function createServer() {
     address: process.env.APP_ADDRESS || '0x88032398beab20017e61064af3c7c8bd38f4c968',
     app_url: process.env.APP_URL || 'http://localhost:8000/data',
     app_reward: 0,
+    app_schema: [{ language: 30, weight: 30}, 50],
     app_dependencies: []
   }));
   app.use(express.static("public"));
