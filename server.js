@@ -37,7 +37,7 @@ async function getData(req, res) {
   if (!token || !wp) {
   	res.sendStatus(404);
   } else {
-    res.headers["x-write-permission"] = encodeWritePermissionHeader(wp);
+    res.setHeader("x-write-permission", encodeWritePermissionHeader(wp));
 	  res.json(await githubLanguageScore(token));
   }
 }
