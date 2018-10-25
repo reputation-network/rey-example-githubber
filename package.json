@@ -9,7 +9,6 @@
     "express": "^4.16.3",
     "lodash": "^4.17.11",
     "mongodb": "^3.1.4",
-    "morgan": "^1.9.1",
-    "web3-eth-accounts": "^1.0.0-beta.36"
+    "morgan": "^1.9.1"
   }
 }
