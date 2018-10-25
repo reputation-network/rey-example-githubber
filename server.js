@@ -1,34 +1,44 @@
 const TokenRepository = require("./lib/TokenRepository");
+const WritePermissionRepository = require("./lib/WritePermissionRepository");
 const githubLanguageScore = require("./lib/githubLanguageScore");
 const tokenRepo = TokenRepository(process.env.MONGO_URL || "mongodb://localhost:27017/rey-example-githubber");
+const wpRepo = WritePermissionRepository(process.env.MONGO_URL || "mongodb://localhost:27017/rey-example-githubber");
 
-function recoverSubject(token, signature) {
-  const Accounts = require("web3-eth-accounts");
-  const accounts = new Accounts();
-  const subject = accounts.recover(token, signature).toLowerCase();
-  return subject;
-}
-
-function saveToken(req, res, next) {
-  const [schema, credentials] = req.headers.authorization.split(" ");
-  const [token, signature] = credentials.split(":");
-  const subject = recoverSubject(token, signature);
-  return tokenRepo.set(subject, token)
-  	.then(() => res.sendStatus(200))
-  	.catch((e) => console.error(e))
+async function saveSubjectData(req, res, next) {
+  const { token, writePermission } = req.body;
+  console.log(req.body);
+  // FIXME: We SHOULD validate the write permission!
+  const subject = writePermission.subject;
+  try {
+    await Promise.all([
+      tokenRepo.set(subject, token),
+      wpRepo.set(subject, writePermission),
+    ]);
+    res.sendStatus(200);
+  } catch (e) {
+    res.status(500).send(e.message);
+  }
 }
 
 function parseSubjectHeader(headers) {
   return JSON.parse(Buffer.from(headers["x-permission-subject"], "base64").toString("utf8")).toLowerCase();
 }
 
+function encodeWritePermissionHeader(wp) {
+  return Buffer.from(JSON.stringify(wp), "utf8").toString("base64");
+}
+
 async function getData(req, res) {
   const subject = parseSubjectHeader(req.headers);
-  const token = await tokenRepo.get(subject);
-  if (!token) {
+  const [token, wp] = await Promise.all([
+    tokenRepo.get(subject),
+    wpRepo.get(subject),
+  ]);
+  if (!token || !wp) {
   	res.sendStatus(404);
   } else {
-	res.json(await githubLanguageScore(token));
+    res.headers["x-write-permission"] = encodeWritePermissionHeader(wp);
+	  res.json(await githubLanguageScore(token));
   }
 }
 
@@ -37,7 +47,7 @@ function createServer() {
   const morgan = require("morgan");
   const app = express();
   app.use(morgan("combined"));
-  app.post("/saveToken", saveToken);
+  app.post("/saveData", express.json(), saveSubjectData);
   app.get("/data", getData);
   app.get("/manifest", (req, res) => res.json({
     version: '1.0',
