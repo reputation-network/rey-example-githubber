@@ -1,5 +1,6 @@
 const btn = document.querySelector("button");
 const tokenInput = document.querySelector("input#token");
+const ui = window.location.hostname === "localhost" ? window.REY.ui("dev") : window.REY.ui("test");
 
 function getManifest() {
   return fetch("/manifest").then((res) => res.json());
@@ -8,7 +9,7 @@ function getManifest() {
 function requestUserWritePermission() {
   return getManifest()
     .then((manifest) => manifest.address)
-    .then((writer) => window.REY.ui.requestOptInSignature({ writer }));
+    .then((writer) => ui.requestWritePermission({ writer }));
 }
 
 async function sendData(token, writePermission) {
