@@ -57,6 +57,7 @@ function createServer() {
     picture_url: process.env.PICTURE_URL || 'https://avatars1.githubusercontent.com/u/42174428?s=200&v=4',
     address: process.env.APP_ADDRESS || '0x88032398beab20017e61064af3c7c8bd38f4c968',
     app_url: process.env.APP_URL || 'http://localhost:8000/data',
+    app_callback_url: process.env.APP_CALLBACK_URL || 'http://localhost:8000/data/callback',
     app_reward: 0,
     app_schema: [{ language: 30, weight: 30}, 50],
     app_dependencies: []
